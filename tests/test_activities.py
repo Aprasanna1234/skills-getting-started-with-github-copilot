@@ -9,12 +9,15 @@ def test_get_activities_returns_all_activities(client, reset_activities):
     """
     Test that GET /activities returns all available activities
     """
-    response = client.get("/activities")
+    # Arrange
+    # Client and reset_activities fixture already set up
     
-    assert response.status_code == 200
+    # Act
+    response = client.get("/activities")
     data = response.json()
     
-    # Verify all three activities are present
+    # Assert
+    assert response.status_code == 200
     assert "Chess Club" in data
     assert "Programming Class" in data
     assert "Gym Class" in data
@@ -24,17 +27,18 @@ def test_get_activities_returns_correct_activity_structure(client, reset_activit
     """
     Test that each activity has the correct data structure and fields
     """
+    # Arrange
+    expected_fields = ["description", "schedule", "max_participants", "participants"]
+    
+    # Act
     response = client.get("/activities")
-    
-    assert response.status_code == 200
     data = response.json()
-    
-    # Check Chess Club structure
     chess_club = data["Chess Club"]
-    assert "description" in chess_club
-    assert "schedule" in chess_club
-    assert "max_participants" in chess_club
-    assert "participants" in chess_club
+    
+    # Assert
+    assert response.status_code == 200
+    for field in expected_fields:
+        assert field in chess_club
     assert isinstance(chess_club["participants"], list)
 
 
@@ -42,29 +46,40 @@ def test_get_activities_includes_initial_participants(client, reset_activities):
     """
     Test that activities include their initial participants
     """
-    response = client.get("/activities")
+    # Arrange
+    expected_participants = {
+        "Chess Club": ["michael@mergington.edu", "daniel@mergington.edu"],
+        "Programming Class": ["emma@mergington.edu", "sophia@mergington.edu"],
+        "Gym Class": ["john@mergington.edu", "olivia@mergington.edu"]
+    }
     
-    assert response.status_code == 200
+    # Act
+    response = client.get("/activities")
     data = response.json()
     
-    # Verify initial participants are present
-    assert "michael@mergington.edu" in data["Chess Club"]["participants"]
-    assert "daniel@mergington.edu" in data["Chess Club"]["participants"]
-    assert "emma@mergington.edu" in data["Programming Class"]["participants"]
-    assert "sophia@mergington.edu" in data["Programming Class"]["participants"]
-    assert "john@mergington.edu" in data["Gym Class"]["participants"]
-    assert "olivia@mergington.edu" in data["Gym Class"]["participants"]
+    # Assert
+    assert response.status_code == 200
+    for activity, participants in expected_participants.items():
+        for participant in participants:
+            assert participant in data[activity]["participants"]
 
 
 def test_get_activities_returns_correct_max_participants(client, reset_activities):
     """
     Test that activities return correct max_participants capacity
     """
-    response = client.get("/activities")
+    # Arrange
+    expected_capacities = {
+        "Chess Club": 12,
+        "Programming Class": 20,
+        "Gym Class": 30
+    }
     
-    assert response.status_code == 200
+    # Act
+    response = client.get("/activities")
     data = response.json()
     
-    assert data["Chess Club"]["max_participants"] == 12
-    assert data["Programming Class"]["max_participants"] == 20
-    assert data["Gym Class"]["max_participants"] == 30
+    # Assert
+    assert response.status_code == 200
+    for activity, capacity in expected_capacities.items():
+        assert data[activity]["max_participants"] == capacity

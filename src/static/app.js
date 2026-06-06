@@ -10,8 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("/activities");
       const activities = await response.json();
 
-      // Clear loading message
+      // Clear loading message and reset the activity dropdown
       activitiesList.innerHTML = "";
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -20,8 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
         const participantsList = details.participants.length > 0
-          ? details.participants.map(p => `<li><span class="participant-email">${p}</span><button class="delete-participant" data-activity="${name}" data-email="${p}" title="Remove participant">✕</button></li>`).join('')
-          : '<li style="color: #999; font-style: italic;">No participants yet</li>';
+          ? details.participants.map(p => `
+              <li class="participant-item">
+                <span class="participant-email">${p}</span>
+                <button class="delete-participant" data-activity="${name}" data-email="${p}" title="Remove participant">✕</button>
+              </li>
+            `).join('')
+          : '<li class="no-participants">No participants yet</li>';
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
@@ -29,7 +35,10 @@ document.addEventListener("DOMContentLoaded", () => {
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
           <div class="participants-section">
-            <strong>Participants (${details.participants.length}/${details.max_participants}):</strong>
+            <div class="participants-header">
+              <strong>Participants</strong>
+              <span class="participants-count">(${details.participants.length}/${details.max_participants})</span>
+            </div>
             <ul class="participants-list">
               ${participantsList}
             </ul>

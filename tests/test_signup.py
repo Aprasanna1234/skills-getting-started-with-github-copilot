@@ -9,73 +9,72 @@ def test_signup_for_activity_success(client, reset_activities):
     """
     Test successful signup for an activity
     """
+    # Arrange
     email = "alice@mergington.edu"
-    response = client.post(f"/activities/Chess Club/signup?email={email}")
+    activity = "Chess Club"
     
-    assert response.status_code == 200
+    # Act
+    response = client.post(f"/activities/{activity}/signup?email={email}")
     data = response.json()
-    assert data["message"] == f"Signed up {email} for Chess Club"
+    
+    # Assert
+    assert response.status_code == 200
+    assert data["message"] == f"Signed up {email} for {activity}"
 
 
 def test_signup_adds_email_to_participants(client, reset_activities):
     """
     Test that signup actually adds the email to the activity's participants list
     """
+    # Arrange
     email = "alice@mergington.edu"
+    activity = "Chess Club"
     
-    # Sign up
-    response = client.post(f"/activities/Chess Club/signup?email={email}")
-    assert response.status_code == 200
-    
-    # Verify email is in participants
+    # Act
+    client.post(f"/activities/{activity}/signup?email={email}")
     activities_response = client.get("/activities")
     activities_data = activities_response.json()
-    assert email in activities_data["Chess Club"]["participants"]
+    
+    # Assert
+    assert email in activities_data[activity]["participants"]
 
 
 def test_signup_for_different_activities(client, reset_activities):
     """
     Test that a student can sign up for different activities
     """
+    # Arrange
     email1 = "alice@mergington.edu"
     email2 = "bob@mergington.edu"
+    activity1 = "Chess Club"
+    activity2 = "Programming Class"
     
-    # Sign up for Chess Club
-    response1 = client.post(f"/activities/Chess Club/signup?email={email1}")
-    assert response1.status_code == 200
-    
-    # Sign up for Programming Class
-    response2 = client.post(f"/activities/Programming Class/signup?email={email2}")
-    assert response2.status_code == 200
-    
-    # Verify both signups worked
+    # Act
+    client.post(f"/activities/{activity1}/signup?email={email1}")
+    client.post(f"/activities/{activity2}/signup?email={email2}")
     activities_response = client.get("/activities")
     activities_data = activities_response.json()
-    assert email1 in activities_data["Chess Club"]["participants"]
-    assert email2 in activities_data["Programming Class"]["participants"]
+    
+    # Assert
+    assert email1 in activities_data[activity1]["participants"]
+    assert email2 in activities_data[activity2]["participants"]
 
 
 def test_signup_multiple_students_same_activity(client, reset_activities):
     """
     Test that multiple different students can sign up for the same activity
     """
-    email1 = "alice@mergington.edu"
-    email2 = "bob@mergington.edu"
-    email3 = "charlie@mergington.edu"
+    # Arrange
+    emails = ["alice@mergington.edu", "bob@mergington.edu", "charlie@mergington.edu"]
+    activity = "Gym Class"
     
-    # Sign up multiple students
-    response1 = client.post(f"/activities/Gym Class/signup?email={email1}")
-    response2 = client.post(f"/activities/Gym Class/signup?email={email2}")
-    response3 = client.post(f"/activities/Gym Class/signup?email={email3}")
-    
-    assert response1.status_code == 200
-    assert response2.status_code == 200
-    assert response3.status_code == 200
-    
-    # Verify all are in participants
+    # Act
+    for email in emails:
+        client.post(f"/activities/{activity}/signup?email={email}")
     activities_response = client.get("/activities")
     activities_data = activities_response.json()
-    gym_participants = activities_data["Gym Class"]["participants"]
-    assert email1 in gym_participants
-    assert email2 in gym_participants
-    assert email3 in gym_participants
+    gym_participants = activities_data[activity]["participants"]
+    
+    # Assert
+    for email in emails:
+        assert email in gym_participants

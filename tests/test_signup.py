@@ -78,3 +78,4 @@ def test_signup_multiple_students_same_activity(client, reset_activities):
     # Assert
     for email in emails:
         assert email in gym_participants
+    assert email3 in gym_participants

@@ -4,6 +4,8 @@ Tests for the POST /activities/{activity_name}/signup endpoint
 
 import pytest
 
+pytest.skip("Backend tests are consolidated under tests/backend", allow_module_level=True)
+
 
 def test_signup_for_activity_success(client, reset_activities):
     """

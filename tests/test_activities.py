@@ -4,6 +4,8 @@ Tests for the GET /activities endpoint
 
 import pytest
 
+pytest.skip("Backend tests are consolidated under tests/backend", allow_module_level=True)
+
 
 def test_get_activities_returns_all_activities(client, reset_activities):
     """

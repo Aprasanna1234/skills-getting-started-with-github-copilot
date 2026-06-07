@@ -4,6 +4,8 @@ Tests for the GET / redirect endpoint
 
 import pytest
 
+pytest.skip("Backend tests are consolidated under tests/backend", allow_module_level=True)
+
 
 def test_root_endpoint_redirects_to_static(client, reset_activities):
     """

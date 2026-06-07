@@ -4,6 +4,8 @@ Tests for error cases and edge cases in the POST /activities/{activity_name}/sig
 
 import pytest
 
+pytest.skip("Backend tests are consolidated under tests/backend", allow_module_level=True)
+
 
 def test_signup_for_nonexistent_activity(client, reset_activities):
     """

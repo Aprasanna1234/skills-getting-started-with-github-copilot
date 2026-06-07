@@ -4,6 +4,8 @@ Integration and additional endpoint tests for the FastAPI application
 
 import pytest
 
+pytest.skip("Backend tests are consolidated under tests/backend", allow_module_level=True)
+
 
 def test_api_documentation_available(client):
     """
